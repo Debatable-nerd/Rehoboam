@@ -1,0 +1,809 @@
+//import java.util.Random;
+
+final float GOLDRAT=1/1.61803398875;
+//original
+float radCirRef;
+int maxNum=750;
+float[] radWave=new float[maxNum];
+float[] radCir=new float[maxNum];
+float[] angCir=new float[maxNum];
+float[] angWave=new float[maxNum];
+float[] spWave=new float[maxNum];
+int maxCur=maxNum;
+
+float[] partiVel=new float[maxNum];
+float[] pull=new float[maxNum];
+float[] pullAng=new float[maxNum];
+
+float[] partiX=new float[maxNum];
+float[] partiY=new float[maxNum];
+
+int[] index= new int[maxNum];
+int ampCount=1;
+
+//set1
+float radCirRef1;
+int maxNum1=700;
+float[] radWave1=new float[maxNum1];
+float[] radCir1=new float[maxNum1];
+float[] angCir1=new float[maxNum1];
+float[] angWave1=new float[maxNum1];
+float[] spWave1=new float[maxNum1];
+int maxCur1=maxNum1;
+
+float[] partiVel1=new float[maxNum1];
+float[] pull1=new float[maxNum1];
+float[] pullAng1=new float[maxNum1];
+
+float[] partiX1=new float[maxNum1];
+float[] partiY1=new float[maxNum1];
+
+int[] index1= new int[maxNum1];
+int ampCount1=1;
+
+boolean add1=false;
+
+//set2
+float radCirRef2;
+int maxNum2=550;
+float[] radWave2=new float[maxNum2];
+float[] radCir2=new float[maxNum2];
+float[] angCir2=new float[maxNum2];
+float[] angWave2=new float[maxNum2];
+float[] spWave2=new float[maxNum2];
+int maxCur2=maxNum2;
+
+float[] partiVel2=new float[maxNum2];
+float[] pull2=new float[maxNum2];
+float[] pullAng2=new float[maxNum2];
+
+float[] partiX2=new float[maxNum2];
+float[] partiY2=new float[maxNum2];
+
+int[] index2= new int[maxNum2];
+int ampCount2=1;
+
+boolean add2=false;
+
+//set3
+float radCirRef3;
+int maxNum3=400;
+float[] radWave3=new float[maxNum3];
+float[] radCir3=new float[maxNum3];
+float[] angCir3=new float[maxNum3];
+float[] angWave3=new float[maxNum3];
+float[] spWave3=new float[maxNum3];
+int maxCur3=maxNum3;
+
+float[] partiVel3=new float[maxNum3];
+float[] pull3=new float[maxNum3];
+float[] pullAng3=new float[maxNum3];
+
+float[] partiX3=new float[maxNum3];
+float[] partiY3=new float[maxNum3];
+
+int[] index3= new int[maxNum3];
+int ampCount3=1;
+
+boolean add3=false;
+
+//set4
+float radCirRef4;
+int maxNum4=250;
+float[] radWave4=new float[maxNum4];
+float[] radCir4=new float[maxNum4];
+float[] angCir4=new float[maxNum4];
+float[] angWave4=new float[maxNum4];
+float[] spWave4=new float[maxNum4];
+int maxCur4=maxNum4;
+
+float[] partiVel4=new float[maxNum4];
+float[] pull4=new float[maxNum4];
+float[] pullAng4=new float[maxNum4];
+
+float[] partiX4=new float[maxNum4];
+float[] partiY4=new float[maxNum4];
+
+int[] index4= new int[maxNum4];
+int ampCount4=1;
+
+boolean add4=false;
+
+int timer=0;
+float partiSize=0.5;
+
+//timer
+int startingTime;
+final String prefix = "This trial has been running for ";
+//Random gen;
+void setup() {
+  //gen =new Random();
+
+  //size(700, 400);
+  frameRate(180);
+  fullScreen();
+  smooth();
+  background(255);
+  initi(0);
+
+  startingTime = millis();
+}
+
+void draw() {
+  smooth();
+  background(255);
+  if (clock) 
+    drawClock();
+
+  if (trialTime)
+    drawTrialTime();
+
+  calcParti(0);
+  drawCurve(0);
+  drawParticle(0);
+
+  moveParticle(0);
+  modParticle(0);
+
+  if (add1) {
+    calcParti(1);
+    drawCurve(1);
+    drawParticle(1);
+
+    moveParticle(1);
+    modParticle(1);
+  }//if
+
+  if (add2) {
+    calcParti(2);
+    drawCurve(2);
+    drawParticle(2);
+
+    moveParticle(2);
+    modParticle(2);
+  }//if
+
+  if (add3) {
+    calcParti(3);
+    drawCurve(3);
+    drawParticle(3);
+
+    moveParticle(3);
+    modParticle(3);
+  }//if
+  if (add4) {
+    calcParti(4);
+    drawCurve(4);
+    drawParticle(4);
+
+    moveParticle(4);
+    modParticle(4);
+  }//if
+
+  timer++;
+}//draw
+
+void keyPressed() {
+  if (key==' ') {
+    initi(0);
+    startingTime = millis();
+  } else if (keyCode==UP) {
+    if (!add1)
+      initi(1);
+    else { 
+      if (!add2)
+        initi(2);
+      else {
+        if (!add3)
+          initi(3);
+        else
+          initi(4);
+      }//if
+    }//if
+  } else if (keyCode==DOWN)
+    if (add4)
+      add4=false;
+    else {
+      if (add3)
+        add3=false;
+      else {
+        if (add2)
+          add2=false;
+        else 
+        add1=false;
+      }//if
+    }//if
+}//keyPressed
+
+/*
+************************************CLOCK STUFF
+*/
+boolean clock=false;
+boolean leftClick=true;
+boolean trialTime=false;
+int clickCount=0;
+float mousePosX=0, mousePosY=0;
+float fontSize;
+void mousePressed() {
+  clock=!clock;
+  if (mouseButton==LEFT)
+    leftClick=true;
+  else
+    leftClick=false;
+  if (clickCount++ %3<=1)
+    trialTime=true;
+  else
+    trialTime=false;
+  clickCount= clickCount %4;
+  //println(clickCount);
+  fontSize=min(width/2, height/2)*pow(GOLDRAT, 6.5);
+  mousePosX=mouseX;
+  mousePosY=mouseY;
+}//mousePressed
+
+
+void drawClock() {
+  fill(0);
+
+  textSize(fontSize);
+  textAlign(CENTER, CENTER);
+  String min, sec, nano;
+  String time;
+  long milisec= System.currentTimeMillis();
+  milisec=milisec-(milisec/1000*1000);
+  if (second()<10)
+    sec=": 0";
+  else
+    sec=": ";
+  if (minute()<10)
+    min=": 0";
+  else
+    min=": ";
+  if (milisec<100) {
+    if (milisec<10)
+      if (milisec==0)
+        nano=": 000";
+      else
+        nano=": 00";
+    else
+      nano=": 0";
+  } else
+    nano=": ";  
+  time= hour()+min + minute()+sec + second()+nano+ milisec;
+  String date= day()+"/"+ month()+"/"+year();
+  if (leftClick)
+    text(time, mousePosX, mousePosY-fontSize/2);
+  else
+    text(date, mousePosX, mousePosY-fontSize/2);
+}//drawClock
+
+void drawTrialTime() {
+  textSize(fontSize*pow(GOLDRAT, 1.5));
+  int seconds = (millis() - startingTime) / 1000;
+  int minutes = seconds / 60;
+  int hours = minutes / 60;
+  int days = hours / 24;
+  seconds -= minutes * 60;
+  minutes -= hours * 60;
+  hours -= days * 24;
+
+  String message = prefix +
+    GetPlural(days, "day") + " " +
+    GetPlural(hours, "hour") + " " +
+    GetPlural(minutes, "minute") + " and " +
+    GetPlural(seconds, "second");
+
+  textAlign(CENTER, CENTER);
+  text(message, mousePosX, fontSize+mousePosY);
+}//drawTrialTime
+
+String GetPlural(int value, String word) {
+  if (value == 1)
+    return value + " " + word;
+  // Ad hoc for current sketch,
+  // I have something more elaborate for irregular plurals
+  return value + " " + word + "s";
+}//GetPlural
+
+/*
+********************************************REHOBOAM****************
+*/
+void initi(int k) {
+  radCirRef=GOLDRAT*min(width/2, height/2);
+  if (k==0) {
+    radWave=fillArray(maxCur, maxNum, 0, pow(GOLDRAT, GOLDRAT*7.5)*min(width/2, height/2));
+    spWave=fillArray(maxCur, maxNum, 1, pow(1/GOLDRAT, 4));
+    moveParticle(0);
+    angCir=fillArray(maxCur, maxNum, 0, TWO_PI);
+
+    pull=fillArray(maxCur, maxNum, detectMin(spWave)*pow(GOLDRAT, 0), detectMax(spWave)/pow(GOLDRAT, 0));
+    interactiveParti(0);
+
+    index=indexAngCir(angCir);
+  } else if (k==1 &&!add1) {
+    radWave1=fillArray(maxCur1, maxNum1, 0, pow(GOLDRAT, GOLDRAT*7.5)*min(width/2, height/2));
+    spWave1=fillArray(maxCur1, maxNum1, 1, pow(1/GOLDRAT, 4));
+    moveParticle(0);
+    angCir1=fillArray(maxCur1, maxNum1, 0, TWO_PI);
+
+    pull1=fillArray(maxCur1, maxNum1, detectMin(spWave1)*pow(GOLDRAT, pow(k, GOLDRAT)), detectMax(spWave1)/pow(GOLDRAT, pow(k, GOLDRAT)));
+    interactiveParti(1);
+
+    index1=indexAngCir(angCir1);
+    add1=!add1;
+  } else if (k==2 &&!add2) {
+    radWave2=fillArray(maxCur2, maxNum2, 0, pow(GOLDRAT, GOLDRAT*7.5)*min(width/2, height/2));
+    spWave2=fillArray(maxCur2, maxNum2, 1, pow(1/GOLDRAT, 4));
+    moveParticle(0);
+    angCir2=fillArray(maxCur2, maxNum2, 0, TWO_PI);
+
+    pull2=fillArray(maxCur2, maxNum2, detectMin(spWave2)*pow(GOLDRAT, pow(k, GOLDRAT)), detectMax(spWave2)/pow(GOLDRAT, pow(k, GOLDRAT)));
+    interactiveParti(2);
+
+    index2=indexAngCir(angCir2);
+    add2=!add2;
+  } else if (k==3 &&!add3) {
+    radWave3=fillArray(maxCur3, maxNum3, 0, pow(GOLDRAT, GOLDRAT*7.5)*min(width/2, height/2));
+    spWave3=fillArray(maxCur3, maxNum3, 1, pow(1/GOLDRAT, 4));
+    moveParticle(0);
+    angCir3=fillArray(maxCur3, maxNum3, 0, TWO_PI);
+
+    pull3=fillArray(maxCur3, maxNum3, detectMin(spWave3)*pow(GOLDRAT, pow(k, GOLDRAT)), detectMax(spWave3)/pow(GOLDRAT, pow(k, GOLDRAT)));
+    interactiveParti(3);
+
+    index3=indexAngCir(angCir3);
+    add3=!add3;
+  } else if (k==4 &&!add4) {
+    radWave4=fillArray(maxCur4, maxNum4, 0, pow(GOLDRAT, GOLDRAT*7.5)*min(width/2, height/2));
+    spWave4=fillArray(maxCur4, maxNum4, 1, pow(1/GOLDRAT, 4));
+    moveParticle(0);
+    angCir4=fillArray(maxCur4, maxNum4, 0, TWO_PI);
+
+    pull4=fillArray(maxCur4, maxNum4, detectMin(spWave4)*pow(GOLDRAT, pow(k, GOLDRAT)), detectMax(spWave4)/pow(GOLDRAT, pow(k, GOLDRAT)));
+    interactiveParti(4);
+
+    index4=indexAngCir(angCir4);
+    add4=!add4;
+  }//if
+}//initi
+
+int[] indexAngCir(float[] angCir) {
+  float[] sort_angCir=sort(angCir);
+  int[] ind= new int[angCir.length];
+  for (int count=0; count<angCir.length; count++)
+    for (int k=0; k<angCir.length; k++)
+      if (angCir[k]==sort_angCir[count])
+        ind[count]=k;
+  return ind;
+}//indexAngCir
+
+void interactiveParti(int j) {
+  float magMax=40-log(4)+log(partiSize+1);
+  float offset=0;
+  if (j==0)
+    for (int k=0; k<maxCur; k++) {
+      partiVel[k]-=pow(GOLDRAT, GOLDRAT*7.5)*pull[k]*pull[wrapBin(k-1, maxCur)]*sin(angWave[k])/max(magMax, abs(radCir[k]-radCir[wrapBin(k-1, maxCur)]))+
+        pow(GOLDRAT, GOLDRAT*7.5)*pull[k]*pull[wrapBin(k+1, maxCur)]*sin(angWave[k])/max(magMax, abs(radCir[k]-radCir[wrapBin(k+1, maxCur)]));
+      partiVel[wrapBin(k-1, maxCur)]-=pow(GOLDRAT, GOLDRAT*7.5)*pull[k]*pull[wrapBin(k-1, maxCur)]*sin(PI+angWave[k])/max(magMax, abs(radCir[k]-radCir[wrapBin(k-1, maxCur)]));
+      partiVel[wrapBin(k+1, maxCur)]-=pow(GOLDRAT, GOLDRAT*7.5)*pull[k]*pull[wrapBin(k+1, maxCur)]*sin(PI+angWave[k])/max(magMax, abs(radCir[k]-radCir[wrapBin(k+1, maxCur)]));
+      if (timer%(60*GOLDRAT)==0) {//every (60*GOLDRAT) frames, amp up a particle
+        ampCount=(ampCount+4)%45;
+        pull[k]/=pow(GOLDRAT, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount)));
+        float temp=noiseRan(pow(GOLDRAT, .5*j), 1/GOLDRAT, offset);
+        pull[wrapBin(k-1, maxCur)]/=pow(GOLDRAT*temp, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount/2)));
+        pull[wrapBin(k+1, maxCur)]/=pow(GOLDRAT*temp, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount/2)));
+      }//if
+      radWave[k] +=partiVel[k]*pow(GOLDRAT, GOLDRAT*7.5);
+      radWave[k] *=pow(GOLDRAT, GOLDRAT/pow(10, 1/GOLDRAT));
+    }//for
+  else if (j==1)
+    for (int k=0; k<maxCur1; k++) {
+      partiVel1[k]-=pow(GOLDRAT, GOLDRAT*7.5)*pull1[k]*pull1[wrapBin(k-1, maxCur1)]*sin(angWave1[k])/max(magMax, abs(radCir1[k]-radCir1[wrapBin(k-1, maxCur1)]))+
+        pow(GOLDRAT, GOLDRAT*7.5)*pull1[k]*pull1[wrapBin(k+1, maxCur1)]*sin(angWave1[k])/max(magMax, abs(radCir1[k]-radCir1[wrapBin(k+1, maxCur1)]));
+      partiVel1[wrapBin(k-1, maxCur1)]-=pow(GOLDRAT, GOLDRAT*7.5)*pull1[k]*pull1[wrapBin(k-1, maxCur1)]*sin(PI+angWave1[k])/max(magMax, abs(radCir1[k]-radCir1[wrapBin(k-1, maxCur1)]));
+      partiVel1[wrapBin(k+1, maxCur1)]-=pow(GOLDRAT, GOLDRAT*7.5)*pull1[k]*pull1[wrapBin(k+1, maxCur1)]*sin(PI+angWave1[k])/max(magMax, abs(radCir1[k]-radCir1[wrapBin(k+1, maxCur1)]));
+      if (timer%(60*pow(GOLDRAT, 2))==0) {//every (60*GOLDRAT) frames, amp up a particle
+        ampCount1+=4;
+        ampCount1*=4;
+        pull1[k]/=pow(GOLDRAT, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount1)));
+        float temp=noiseRan(pow(GOLDRAT, .5*j), 1/GOLDRAT, offset);
+        pull1[wrapBin(k-1, maxCur1)]/=pow(GOLDRAT*temp, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount1/2)));
+        pull1[wrapBin(k+1, maxCur1)]/=pow(GOLDRAT*temp, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount1/2)));
+      }//if
+      radWave1[k] +=partiVel1[k]*pow(GOLDRAT, GOLDRAT*7.5);
+      radWave1[k] *=pow(GOLDRAT, GOLDRAT/pow(10, 1/GOLDRAT));
+    }//for
+  else if (j==2)
+    for (int k=0; k<maxCur2; k++) {
+      partiVel2[k]-=pow(GOLDRAT, GOLDRAT*7.5)*pull2[k]*pull2[wrapBin(k-1, maxCur2)]*sin(angWave2[k])/max(magMax, abs(radCir2[k]-radCir2[wrapBin(k-1, maxCur2)]))+
+        pow(GOLDRAT, GOLDRAT*7.5)*pull2[k]*pull2[wrapBin(k+1, maxCur2)]*sin(angWave2[k])/max(magMax, abs(radCir2[k]-radCir2[wrapBin(k+1, maxCur2)]));
+      partiVel2[wrapBin(k-1, maxCur2)]-=pow(GOLDRAT, GOLDRAT*7.5)*pull2[k]*pull2[wrapBin(k-1, maxCur2)]*sin(PI+angWave2[k])/max(magMax, abs(radCir2[k]-radCir2[wrapBin(k-1, maxCur2)]));
+      partiVel2[wrapBin(k+1, maxCur2)]-=pow(GOLDRAT, GOLDRAT*7.5)*pull2[k]*pull2[wrapBin(k+1, maxCur2)]*sin(PI+angWave2[k])/max(magMax, abs(radCir2[k]-radCir2[wrapBin(k+1, maxCur2)]));
+      if (timer%(60*pow(GOLDRAT, 3))==0) {//every (60*GOLDRAT) frames, amp up a particle
+        ampCount2=(ampCount2+3)%35;
+        pull2[k]/=pow(GOLDRAT, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount2)));
+        float temp=noiseRan(pow(GOLDRAT, .5*j), 1/GOLDRAT, offset);
+        pull2[wrapBin(k-1, maxCur2)]/=pow(GOLDRAT*temp, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount2/2)));
+        pull2[wrapBin(k+1, maxCur2)]/=pow(GOLDRAT*temp, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount2/2)));
+      }//if
+      radWave2[k] +=partiVel2[k]*pow(GOLDRAT, GOLDRAT*7.5);
+      radWave2[k] *=pow(GOLDRAT, GOLDRAT/pow(10, 1/GOLDRAT));
+    }//for
+  else if (j==3)
+    for (int k=0; k<maxCur3; k++) {
+      partiVel3[k]-=pow(GOLDRAT, GOLDRAT*7.5)*pull3[k]*pull3[wrapBin(k-1, maxCur3)]*sin(angWave3[k])/max(magMax, abs(radCir3[k]-radCir3[wrapBin(k-1, maxCur3)]))+
+        pow(GOLDRAT, GOLDRAT*7.5)*pull3[k]*pull3[wrapBin(k+1, maxCur3)]*sin(angWave3[k])/max(magMax, abs(radCir3[k]-radCir3[wrapBin(k+1, maxCur3)]));
+      partiVel3[wrapBin(k-1, maxCur3)]-=pow(GOLDRAT, GOLDRAT*7.5)*pull3[k]*pull3[wrapBin(k-1, maxCur3)]*sin(PI+angWave3[k])/max(magMax, abs(radCir3[k]-radCir3[wrapBin(k-1, maxCur3)]));
+      partiVel3[wrapBin(k+1, maxCur3)]-=pow(GOLDRAT, GOLDRAT*7.5)*pull3[k]*pull3[wrapBin(k+1, maxCur3)]*sin(PI+angWave3[k])/max(magMax, abs(radCir3[k]-radCir3[wrapBin(k+1, maxCur3)]));
+      if (timer%(60*pow(GOLDRAT, 4))==0) {//every (60*GOLDRAT) frames, amp up a particle
+        ampCount3=(ampCount3+3)%40;
+        pull3[k]/=pow(GOLDRAT, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount3)));
+        float temp=noiseRan(pow(GOLDRAT, .5*j), 1/GOLDRAT, offset);
+        pull3[wrapBin(k-1, maxCur3)]/=pow(GOLDRAT*temp, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount3/2)));
+        pull3[wrapBin(k+1, maxCur3)]/=pow(GOLDRAT*temp, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount3/2)));
+      }//if
+      radWave3[k] +=partiVel3[k]*pow(GOLDRAT, GOLDRAT*7.5);
+      radWave3[k] *=pow(GOLDRAT, GOLDRAT/pow(10, 1/GOLDRAT));
+    }//for
+  else if (j==4)
+    for (int k=0; k<maxCur4; k++) {
+      partiVel4[k]-=pow(GOLDRAT, GOLDRAT*7.5)*pull4[k]*pull4[wrapBin(k-1, maxCur4)]*sin(angWave4[k])/max(magMax, abs(radCir4[k]-radCir4[wrapBin(k-1, maxCur4)]))+
+        pow(GOLDRAT, GOLDRAT*7.5)*pull4[k]*pull4[wrapBin(k+1, maxCur4)]*sin(angWave4[k])/max(magMax, abs(radCir4[k]-radCir4[wrapBin(k+1, maxCur4)]));
+      partiVel4[wrapBin(k-1, maxCur4)]-=pow(GOLDRAT, GOLDRAT*7.5)*pull4[k]*pull4[wrapBin(k-1, maxCur4)]*sin(PI+angWave4[k])/max(magMax, abs(radCir4[k]-radCir4[wrapBin(k-1, maxCur4)]));
+      partiVel4[wrapBin(k+1, maxCur4)]-=pow(GOLDRAT, GOLDRAT*7.5)*pull4[k]*pull4[wrapBin(k+1, maxCur4)]*sin(PI+angWave4[k])/max(magMax, abs(radCir4[k]-radCir4[wrapBin(k+1, maxCur4)]));
+      if (timer%(60*pow(GOLDRAT, 5))==0) {//every (60*GOLDRAT) frames, amp up a particle
+        ampCount4=(ampCount4+3)%60;
+        pull4[k]/=pow(GOLDRAT, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount4)));
+        float temp=noiseRan(pow(GOLDRAT, .5*j), 1/GOLDRAT, offset);
+        pull4[wrapBin(k-1, maxCur4)]/=pow(GOLDRAT*temp, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount4/2)));
+        pull4[wrapBin(k+1, maxCur4)]/=pow(GOLDRAT*temp, GOLDRAT*pow(10, -pow(GOLDRAT, ampCount4/2)));
+      }//if
+      radWave4[k] +=partiVel4[k]*pow(GOLDRAT, GOLDRAT*7.5);
+      radWave4[k] *=pow(GOLDRAT, GOLDRAT/pow(10, 1/GOLDRAT));
+    }//for
+}//interactiveParti
+
+void moveParticle(int j) {
+  if (j==0) {
+    for (int k=0; k<maxCur; k++) {
+      angWave[k]=(angWave[k]+pow(GOLDRAT, GOLDRAT*10)*spWave[k])%TWO_PI;
+      radCir[k]=radCirRef+radWave[k] *sin(angWave[k]);
+    }//for
+  } else if (j==1) {
+    for (int k=0; k<maxCur1; k++) {
+      angWave1[k]=(angWave1[k]+pow(GOLDRAT, GOLDRAT*10)*spWave1[k])%TWO_PI;
+      radCir1[k]=radCirRef+radWave1[k] *sin(angWave1[k]);
+    }//for
+  } else if (j==2) {
+    for (int k=0; k<maxCur2; k++) {
+      angWave2[k]=(angWave2[k]+pow(GOLDRAT, GOLDRAT*10)*spWave2[k])%TWO_PI;
+      radCir2[k]=radCirRef+radWave2[k] *sin(angWave2[k]);
+    }//for
+  } else if (j==3) {
+    for (int k=0; k<maxCur3; k++) {
+      angWave3[k]=(angWave3[k]+pow(GOLDRAT, GOLDRAT*10)*spWave3[k])%TWO_PI;
+      radCir3[k]=radCirRef+radWave3[k] *sin(angWave3[k]);
+    }//for
+  } else if (j==4) {
+    for (int k=0; k<maxCur4; k++) {
+      angWave4[k]=(angWave4[k]+pow(GOLDRAT, GOLDRAT*10)*spWave4[k])%TWO_PI;
+      radCir4[k]=radCirRef+radWave4[k] *sin(angWave4[k]);
+    }//for
+  }//if
+  interactiveParti(j);
+}//moveParticle
+
+float security=1;
+void modParticle(int j) {
+
+  if (j==0){
+    float temp=detectMax(radWave);
+    for (int k=0; k<maxCur; k++) {
+      radWave[k]-=pow(GOLDRAT, GOLDRAT*10)*security;
+      radWave[k]*=pow(pow(GOLDRAT, GOLDRAT/10), (security+ pow(1+pow(temp, pow(GOLDRAT, -.725))/min(width/2, height/2), security))/2);
+    }//for
+  }else if (j==1){
+    float temp=detectMax(radWave1);
+    for (int k=0; k<maxCur1; k++) {
+      radWave1[k]-=pow(GOLDRAT, GOLDRAT*10);
+      radWave1[k]*=pow(pow(GOLDRAT, GOLDRAT/10), security*(1+pow(temp, pow(GOLDRAT, -.725))/min(width/2, height/2)));
+    }//for
+  }else if (j==2){
+    for (int k=0; k<maxCur2; k++) {
+      float temp=detectMax(radWave2);
+      radWave2[k]-=pow(GOLDRAT, GOLDRAT*10);
+      radWave2[k]*=pow(pow(GOLDRAT, GOLDRAT/10), pow(1+pow(temp, pow(GOLDRAT, -.725))/min(width/2, height/2), security));
+    }//for
+  }else if (j==3){
+    for (int k=0; k<maxCur3; k++) {
+      float temp=detectMax(radWave3);
+      radWave3[k]-=pow(GOLDRAT, GOLDRAT*10);
+      radWave3[k]*=pow(pow(GOLDRAT, GOLDRAT/10), security*(1+pow(temp, pow(GOLDRAT, -.725))/min(width/2, height/2)));
+    }//for
+  }else if (j==4){
+    for (int k=0; k<maxCur4; k++) {
+      float temp=detectMax(radWave4);
+      radWave4[k]-=pow(GOLDRAT, GOLDRAT*10)*security;
+      radWave4[k]*=pow(pow(GOLDRAT, GOLDRAT/10), pow((1+pow(temp, pow(GOLDRAT, -.25))/min(width/2, height/2)), security));
+    }//for
+  }
+  if (security>2)
+    security--;
+}//modParticle
+
+void calcParti(int j) {
+  if (j==0)
+    for (int k=0; k<maxCur; k++) {
+      partiX[k]=width/2+radCir[k]*sin(angCir[k]);
+      partiY[k]=height/2+radCir[k]*cos(angCir[k]);
+    }//for
+  else if (j==1)
+    for (int k=0; k<maxCur1; k++) {
+      partiX1[k]=width/2+radCir1[k]*sin(angCir1[k]);
+      partiY1[k]=height/2+radCir1[k]*cos(angCir1[k]);
+    }//for
+  else if (j==2)
+    for (int k=0; k<maxCur2; k++) {
+      partiX2[k]=width/2+radCir2[k]*sin(angCir2[k]);
+      partiY2[k]=height/2+radCir2[k]*cos(angCir2[k]);
+    }//for
+  else if (j==3)
+    for (int k=0; k<maxCur3; k++) {
+      partiX3[k]=width/2+radCir3[k]*sin(angCir3[k]);
+      partiY3[k]=height/2+radCir3[k]*cos(angCir3[k]);
+    }//for
+  else if (j==4)
+    for (int k=0; k<maxCur4; k++) {
+      partiX4[k]=width/2+radCir4[k]*sin(angCir4[k]);
+      partiY4[k]=height/2+radCir4[k]*cos(angCir4[k]);
+    }//for
+
+}//calcParti
+
+boolean ptInRect(float[] x, float[] y, int maxCur, float left, float top, float wide, float high) {
+  for (int k=0; k<maxCur; k++)
+    if (x[k]>=left && x[k]<=left+wide && y[k]>=top && y[k]<=top+high) 
+      return true;
+  return false;
+}//ptInRect
+
+
+void message(float[] x, float[] y, float[] cirName, int bin, int type, int set) {
+
+  float txSize=min(width/2, height/2)*pow(GOLDRAT, pow(1/GOLDRAT, 3.5));
+  textSize(txSize);
+  String anon="ANOMALY DETECTED", div="DIVERGENCE";
+  String info=" SIMULATION: set "+set;
+  String securityLevel="  SECURITY LEVEL: "+ security;
+  float txX=-10, txY=-10;
+  int negX=2, negY=2;
+  float minDist=0;
+
+
+  if (x[bin]<=width/2 &&y[bin]<=height/2) {//upper left
+    textAlign(RIGHT, BOTTOM);
+    negX=1;//x-
+    negY=1;//y-
+    minDist=min(x[bin]-0, y[bin]-0);
+  } else if (x[bin]<=width/2 &&y[bin]>height/2) {//lower left
+    textAlign(RIGHT, TOP);
+    negX=1;//x-
+    negY=2;//y+
+    minDist=min(x[bin]-0, height-y[bin]);
+  } else if (x[bin]>width/2 &&y[bin]>height/2) {//lower right
+    textAlign(LEFT, TOP);
+    negX=2;//x+
+    negY=2;//y+
+    minDist=min(width-x[bin], height-y[bin]);
+  } else {//upper right
+    textAlign(LEFT, BOTTOM);
+    negX=2;
+    negY=1;
+    minDist=min(x[bin]-0, height-y[bin]);
+  }//if
+  txX=x[bin]+abs(width/2-x[bin])*pow(-1, negX)*GOLDRAT*minDist/width;
+  txY=y[bin]+abs(height/2-y[bin])*pow(-1, negY)*pow(GOLDRAT, 2)*minDist/height;
+  if (type==1) {
+    fill(0, 255*(cirName[bin]/radCirRef-1)/pow(GOLDRAT, 1+1/pow(GOLDRAT, 5-set))*(1+set/.25));
+    text(anon, txX, txY);
+    security=max((1.75+log(set+1))+exp(cirName[bin]/radCirRef), security);
+    fill(0, 255*pow((cirName[bin]/radCirRef-1), 1.1)/pow(GOLDRAT, 1+1/pow(GOLDRAT, 5-set))*(1+set/.25)*GOLDRAT);
+  } else {
+    fill(0, 255*(cirName[bin]/radCirRef-1)/pow(GOLDRAT, 1+1/pow(GOLDRAT, 5-set))*(1+set/.25)/GOLDRAT);
+    text(div, txX, txY);
+    security=2.25+log(set+1)+exp(cirName[bin]/radCirRef);
+    security+=exp(cirName[bin]/radCirRef);
+    fill(0, 255*pow((cirName[bin]/radCirRef-1), 1.1)/pow(GOLDRAT, 1+1/pow(GOLDRAT, 5-set))*(1+set/.25));
+  }//if
+
+  textSize(txSize*GOLDRAT);
+  text(info, txX, txY+txSize);
+  textSize(txSize*pow(GOLDRAT, 2));
+  text(securityLevel, txX, txY+txSize*(1+GOLDRAT));
+
+  line(txX, txY, x[bin], y[bin]);
+
+  ellipse(x[bin], y[bin], (cirName[bin]/radCirRef)/pow(GOLDRAT, pow(GOLDRAT, -2*(cirName[bin]/radCirRef)))*partiSize, (cirName[bin]/radCirRef)/pow(GOLDRAT, pow(GOLDRAT, -2*(cirName[bin]/radCirRef)))*partiSize);
+}//message
+
+void drawParticle(int j) {
+
+  if (j==0)
+    for (int k=0; k<maxCur; k++) {
+      if (radCir[k]>=radCirRef*(1+pow(GOLDRAT, 4))) 
+        if (radCir[k]<radCirRef*(1+pow(GOLDRAT, 3))) 
+          message(partiX, partiY, radCir, k, 1, j);
+        else
+          message(partiX, partiY, radCir, k, 2, j);
+      fill(0, 255*(1-pow(GOLDRAT, .125*j)));
+      ellipse(partiX[k], partiY[k], partiSize, partiSize);
+    }//for
+  else if (j==1)
+    for (int k=0; k<maxCur1; k++) {
+      if (radCir1[k]>=radCirRef*(1+pow(GOLDRAT, 4))) 
+        if (radCir1[k]<radCirRef*(1+pow(GOLDRAT, 3))) 
+          message(partiX1, partiY1, radCir, k, 1, j);
+        else
+          message(partiX1, partiY1, radCir, k, 2, j);
+      fill(0, 255*(1-pow(GOLDRAT, .125*j)));
+      ellipse(partiX1[k], partiY1[k], partiSize, partiSize);
+    }//for
+  else if (j==2)
+    for (int k=0; k<maxCur2; k++) {
+      if (radCir2[k]>=radCirRef*(1+pow(GOLDRAT, 4))) 
+        if (radCir2[k]<radCirRef*(1+pow(GOLDRAT, 3))) 
+          message(partiX2, partiY2, radCir, k, 1, j);
+        else
+          message(partiX2, partiY2, radCir, k, 2, j);
+      fill(0, 255*(1-pow(GOLDRAT, .125*j)));
+      ellipse(partiX2[k], partiY2[k], partiSize, partiSize);
+    }//for
+  else if (j==3)
+    for (int k=0; k<maxCur3; k++) {
+      if (radCir3[k]>=radCirRef*(1+pow(GOLDRAT, 4))) 
+        if (radCir3[k]<radCirRef*(1+pow(GOLDRAT, 3))) 
+          message(partiX3, partiY3, radCir, k, 1, j);
+        else
+          message(partiX3, partiY3, radCir, k, 2, j);
+      fill(0, 255*(1-pow(GOLDRAT, .125*j)));
+      ellipse(partiX3[k], partiY3[k], partiSize, partiSize);
+    }//for
+  else if (j==4)
+    for (int k=0; k<maxCur4; k++) {
+      if (radCir4[k]>=radCirRef*(1+pow(GOLDRAT, 4))) 
+        if (radCir4[k]<radCirRef*(1+pow(GOLDRAT, 3))) 
+          message(partiX4, partiY4, radCir, k, 1, j);
+        else
+          message(partiX4, partiY4, radCir, k, 2, j);
+      fill(0, 255*(1-pow(GOLDRAT, .125*j)));
+      ellipse(partiX4[k], partiY4[k], partiSize, partiSize);
+    }//for4
+}//drawParticle
+
+void drawCurve(int j) {
+  fill(255*pow(GOLDRAT, 36)*(1-pow(GOLDRAT, .25*j+.5)), 255*(1-pow(GOLDRAT, 1.375*j+1.375))*pow(GOLDRAT, pow(j, 1/GOLDRAT)));
+  stroke(255*pow(GOLDRAT, 18)*(1-pow(GOLDRAT, .125*j+.25)), 255*(1-pow(GOLDRAT, .625*j+.625))*pow(GOLDRAT, pow(j, 1/GOLDRAT)));
+  
+  if (j==0)
+    for (int k=0; k<maxCur; k++) {
+      beginShape();//curve vertex
+      curveVertex(partiX[index[wrapBin(k-3, maxCur)]], partiY[index[wrapBin(k-3, maxCur)]]);
+      curveVertex(partiX[index[wrapBin(k-2, maxCur)]], partiY[index[wrapBin(k-2, maxCur)]]);
+      curveVertex(partiX[index[wrapBin(k-1, maxCur)]], partiY[index[wrapBin(k-1, maxCur)]]);
+      curveVertex(partiX[index[k]], partiY[index[k]]);
+      curveVertex(partiX[index[wrapBin(k+1, maxCur)]], partiY[index[wrapBin(k+1, maxCur)]]);
+      curveVertex(partiX[index[wrapBin(k+2, maxCur)]], partiY[index[wrapBin(k+2, maxCur)]]);
+      curveVertex(partiX[index[wrapBin(k+3, maxCur)]], partiY[index[wrapBin(k+3, maxCur)]]);
+      endShape();//draw a curved vertex
+    }//for
+  else if (j==1)
+    for (int k=0; k<maxCur1; k++) {
+      beginShape();//curve vertex
+      curveVertex(partiX1[index1[wrapBin(k-3, maxCur1)]], partiY1[index1[wrapBin(k-3, maxCur1)]]);
+      curveVertex(partiX1[index1[wrapBin(k-2, maxCur1)]], partiY1[index1[wrapBin(k-2, maxCur1)]]);
+      curveVertex(partiX1[index1[wrapBin(k-1, maxCur1)]], partiY1[index1[wrapBin(k-1, maxCur1)]]);
+      curveVertex(partiX1[index1[k]], partiY1[index1[k]]);
+      curveVertex(partiX1[index1[wrapBin(k+1, maxCur1)]], partiY1[index1[wrapBin(k+1, maxCur1)]]);
+      curveVertex(partiX1[index1[wrapBin(k+2, maxCur1)]], partiY1[index1[wrapBin(k+2, maxCur1)]]);
+      curveVertex(partiX1[index1[wrapBin(k+3, maxCur1)]], partiY1[index1[wrapBin(k+3, maxCur1)]]);
+      endShape();//draw a curved vertex
+    }//for
+  else if (j==2)
+    for (int k=0; k<maxCur2; k++) {
+      beginShape();//curve vertex
+      curveVertex(partiX2[index2[wrapBin(k-3, maxCur2)]], partiY2[index2[wrapBin(k-3, maxCur2)]]);
+      curveVertex(partiX2[index2[wrapBin(k-2, maxCur2)]], partiY2[index2[wrapBin(k-2, maxCur2)]]);
+      curveVertex(partiX2[index2[wrapBin(k-1, maxCur2)]], partiY2[index2[wrapBin(k-1, maxCur2)]]);
+      curveVertex(partiX2[index2[k]], partiY2[index2[k]]);
+      curveVertex(partiX2[index2[wrapBin(k+1, maxCur2)]], partiY2[index2[wrapBin(k+1, maxCur2)]]);
+      curveVertex(partiX2[index2[wrapBin(k+2, maxCur2)]], partiY2[index2[wrapBin(k+2, maxCur2)]]);
+      curveVertex(partiX2[index2[wrapBin(k+3, maxCur2)]], partiY2[index2[wrapBin(k+3, maxCur2)]]);
+      endShape();//draw a curved vertex
+    }//for
+  else if (j==3)
+    for (int k=0; k<maxCur3; k++) {
+      beginShape();//curve vertex
+      curveVertex(partiX3[index3[wrapBin(k-3, maxCur3)]], partiY3[index3[wrapBin(k-3, maxCur3)]]);
+      curveVertex(partiX3[index3[wrapBin(k-2, maxCur3)]], partiY3[index3[wrapBin(k-2, maxCur3)]]);
+      curveVertex(partiX3[index3[wrapBin(k-1, maxCur3)]], partiY3[index3[wrapBin(k-1, maxCur3)]]);
+      curveVertex(partiX3[index3[k]], partiY3[index3[k]]);
+      curveVertex(partiX3[index3[wrapBin(k+1, maxCur3)]], partiY3[index3[wrapBin(k+1, maxCur3)]]);
+      curveVertex(partiX3[index3[wrapBin(k+2, maxCur3)]], partiY3[index3[wrapBin(k+2, maxCur3)]]);
+      curveVertex(partiX3[index3[wrapBin(k+3, maxCur3)]], partiY3[index3[wrapBin(k+3, maxCur3)]]);
+      endShape();//draw a curved vertex
+    }//for
+  else if (j==4)
+    for (int k=0; k<maxCur4; k++) {
+      beginShape();//curve vertex
+      curveVertex(partiX4[index4[wrapBin(k-3, maxCur4)]], partiY4[index4[wrapBin(k-3, maxCur4)]]);
+      curveVertex(partiX4[index4[wrapBin(k-2, maxCur4)]], partiY4[index4[wrapBin(k-2, maxCur4)]]);
+      curveVertex(partiX4[index4[wrapBin(k-1, maxCur4)]], partiY4[index4[wrapBin(k-1, maxCur4)]]);
+      curveVertex(partiX4[index4[k]], partiY4[index4[k]]);
+      curveVertex(partiX4[index4[wrapBin(k+1, maxCur4)]], partiY4[index4[wrapBin(k+1, maxCur4)]]);
+      curveVertex(partiX4[index4[wrapBin(k+2, maxCur4)]], partiY4[index4[wrapBin(k+2, maxCur4)]]);
+      curveVertex(partiX4[index4[wrapBin(k+3, maxCur4)]], partiY4[index4[wrapBin(k+3, maxCur4)]]);
+      endShape();//draw a curved vertex
+    }//for
+    drawParticle(j);
+}//drawCurve
+
+float[] fillArray(int n, int sizeArray, float min, float max) {
+  float[] temp1= new float[sizeArray];
+  float[] temp2= new float[sizeArray];
+  temp2[0]=normalRan(min, max);
+  temp1[0]=temp2[0];
+
+  for (int j=1; j<n; j++) {//for all elements on the first n th bins, EXCEPT the 0th bin
+    do {//redraw temp[j] if it overlaps with any of the previous dots
+      temp2[j]=normalRan(min, max);
+    } while (overlapSearchLocal(temp1, n, temp2[j])); //do-while
+    temp1[j]=temp2[j];
+  }//for
+
+  return temp1;
+}//fillArray
+
+float normalRan(float min, float max) {
+  //https://discourse.processing.org/t/best-random-number-generator/4674/5
+  float hi=random(1,10);
+  float lo=hi/GOLDRAT;
+  return constrain(map(pow(randomGaussian(), 1)*3, -lo, hi, min, max), min, max);
+}//normalRan
+
+float noiseRan(float min, float max, float offset){
+  return map(noise(offset+=1/maxCur),0,1, min, max);
+}//noiseRan
+
+boolean overlapSearchLocal(float[] x, int n, float x2) {
+  for (int k=0; k<n; k++) {//for all elements on the first n th bins
+    if (x[k]==x2)//if any item in an array has the same value with x2
+      return true;//break the loop; and return overlapSearchLocal=true;
+  }
+  return false;//return overlapSearchLocal=false;
+}//overlapSearchLocal
+
+float detectMax(float[] a) {
+  float max=a[0];
+  for (int k=1; k<a.length; k++)
+    if (a[k]>max)
+      max=a[k];
+  return max;
+}//detectMax
+
+float detectMin(float[] a) {
+  float min=a[0];
+  for (int k=1; k<a.length; k++)
+    if (a[k]<min)
+      min=a[k];
+  return min;
+}//detectMin
+
+int wrapBin(int bin, int binMax) {
+  int noWrap=bin;
+  if (binMax<=bin)
+    return bin-binMax;
+  else if (bin<0)
+    return bin+binMax;
+  return noWrap;
+}//wrapBin
+                
